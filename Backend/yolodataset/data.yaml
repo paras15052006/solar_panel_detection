@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 3
+names: ['roof', 'skylight', 'solar']
+
+roboflow:
+  workspace: parass-workspace-b8vqp
+  project: sky-light-roof-cahyg
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/parass-workspace-b8vqp/sky-light-roof-cahyg/dataset/1
