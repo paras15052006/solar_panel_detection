@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual Environment
+venv/
+.env/
+
+# YOLO training outputs
+runs/
+
+# Model weights
+*.pt
+
+# Dataset cache
+*.cache
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+# Frontend
+Frontend/node_modules/
+
+# Backend
+Backend/venv/
+Backend/runs/
+Backend/__pycache__/
+Backend/*.pt
+
+# Generated images
+*.png
+
+# VS Code
+.vscode/

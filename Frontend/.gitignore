@@ -1,24 +1,31 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# Python cache
+__pycache__/
+*.pyc
 
-node_modules
-dist
-dist-ssr
-*.local
+# Virtual environment
+venv/
+.env/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# YOLO training outputs
+runs/
+
+# Dataset (optional if very large)
+datasets/
+data/images/
+data/labels/
+
+# Model weights
+*.pt
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# System files
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+
+# Logs
+*.log
