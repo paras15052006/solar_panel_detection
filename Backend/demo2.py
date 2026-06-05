@@ -1,73 +1,90 @@
 from ultralytics import YOLO
 import cv2
 import numpy as np
+import os
 
 model = YOLO("solarpd/runs/segment/train-2/weights/best.pt")
 
-results = model.predict(
-    source="spi3.png",
-    conf=0.05,
-    imgsz=1280,
-    retina_masks=True,
-    show_labels=False,
-    show_conf=False,
-    iou=0.30,
-    save=True
-)
 
-img = cv2.imread("spi3.png")
+def solar_area(image_path, square_meters_per_pixel):
 
-# USER INPUT
-square_meters_per_pixel = float(
-    input("Enter square meters per pixel: ")
-)
+    results = model.predict(
+        source=image_path,
+        conf=0.05,
+        imgsz=1280,
+        retina_masks=True,
+        show_labels=False,
+        show_conf=False,
+        iou=0.30,
+        save=True
+    )
 
-total_panel_area_pixels = 0
-total_panel_area_m2 = 0
-panel_count = 0
+    img = cv2.imread(image_path)
 
-for r in results:
+    total_panel_area_pixels = 0
+    total_panel_area_m2 = 0
+    panel_count = 0
 
-    if r.masks is not None:
+    for r in results:
 
-        masks = r.masks.data.cpu().numpy()
-        classes = r.boxes.cls.cpu().numpy()
+        if r.masks is not None:
 
-        for i, (mask, cls) in enumerate(zip(masks, classes)):
+            masks = r.masks.data.cpu().numpy()
+            classes = r.boxes.cls.cpu().numpy()
 
-            class_name = r.names[int(cls)]
+            for mask, cls in zip(masks, classes):
 
-            if class_name != "solar-pv-panel":
-                continue
+                class_name = r.names[int(cls)]
 
-            panel_count += 1
+                if class_name != "solar-pv-panel":
+                    continue
 
-            mask = cv2.resize(
-                mask,
-                (img.shape[1], img.shape[0])
-            )
+                panel_count += 1
 
-            binary_mask = (mask > 0.3).astype(np.uint8)
+                mask = cv2.resize(
+                    mask,
+                    (img.shape[1], img.shape[0])
+                )
 
-            # Pixel area
-            area_pixels = np.sum(binary_mask)
+                binary_mask = (
+                    mask > 0.3
+                ).astype(np.uint8)
 
-            # Convert to m²
-            area_m2 = (
-                area_pixels *
-                square_meters_per_pixel
-            )
+                # Blue overlay for solar panels
+                colored_mask = np.zeros_like(img)
+                colored_mask[:, :, 0] = binary_mask * 255
 
-            total_panel_area_pixels += area_pixels
-            total_panel_area_m2 += area_m2
+                img = cv2.addWeighted(
+                    img,
+                    1.0,
+                    colored_mask,
+                    0.5,
+                    0
+                )
 
-            print(f"\nPanel {panel_count}")
-            print(f"Pixels: {area_pixels}")
-            print(f"Area: {area_m2:.2f} m²")
+                area_pixels = np.sum(binary_mask)
 
-print("\n===================")
-print("TOTAL SOLAR AREA")
-print("===================")
-print(f"Total Panels: {panel_count}")
-print(f"Total Pixels: {total_panel_area_pixels}")
-print(f"Total Area: {total_panel_area_m2:.2f} m²")
+                area_m2 = (
+                    area_pixels *
+                    square_meters_per_pixel
+                )
+
+                total_panel_area_pixels += area_pixels
+                total_panel_area_m2 += area_m2
+
+    output_path = os.path.join(
+        "outputs",
+        "solar_result.png"
+    )
+
+    cv2.imwrite(
+        output_path,
+        img
+    )
+
+    return {
+        "panel_count": int(panel_count),
+        "solar_pixels": int(total_panel_area_pixels),
+        "solar_area_m2": float(total_panel_area_m2),
+        "solar_image": output_path
+    }

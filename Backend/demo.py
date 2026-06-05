@@ -1,86 +1,86 @@
 from ultralytics import YOLO
 import cv2
 import numpy as np
+import os
 
 # Load trained model
 model = YOLO("runs/segment/train-6/weights/best.pt")
 
-# Run prediction
-results = model.predict(
-    source="spi8.png",
-    conf=0.20,
-    imgsz=640,
-    retina_masks=True,
-    save=True
-)
 
-# Read original image
-img = cv2.imread("spi8.png")
+def roof_area(image_path, square_meters_per_pixel):
 
-# User input: square meters represented by ONE pixel
-square_meters_per_pixel = float(
-    input("Enter square meters per pixel: ")
-)
+    # Run prediction
+    results = model.predict(
+        source=image_path,
+        conf=0.20,
+        imgsz=640,
+        retina_masks=True,
+        save=True
+    )
 
-total_roof_area_pixels = 0
-total_roof_area_m2 = 0
+    # Read original image
+    img = cv2.imread(image_path)
 
-for r in results:
+    total_roof_area_pixels = 0
+    total_roof_area_m2 = 0
 
-    # Check if masks exist
-    if r.masks is not None:
+    for r in results:
 
-        masks = r.masks.data.cpu().numpy()
-        classes = r.boxes.cls.cpu().numpy()
+        if r.masks is not None:
 
-        for i, (mask, cls) in enumerate(zip(masks, classes)):
+            masks = r.masks.data.cpu().numpy()
+            classes = r.boxes.cls.cpu().numpy()
 
-            # Get class name
-            class_name = r.names[int(cls)]
+            for mask, cls in zip(masks, classes):
 
-            # ONLY process roofs
-            if class_name != "roof":
-                continue
+                class_name = r.names[int(cls)]
 
-            # Resize mask to original image size
-            mask = cv2.resize(mask, (img.shape[1], img.shape[0]))
+                if class_name != "roof":
+                    continue
 
-            # Convert mask to binary
-            binary_mask = (mask > 0.5).astype(np.uint8)
+                mask = cv2.resize(
+                    mask,
+                    (img.shape[1], img.shape[0])
+                )
 
-            # Count roof pixels
-            area_pixels = np.sum(binary_mask)
+                binary_mask = (
+                    mask > 0.5
+                ).astype(np.uint8)
 
-            # Convert to square meters
-            area_m2 = area_pixels * square_meters_per_pixel
+                # Green overlay for roofs
+                colored_mask = np.zeros_like(img)
+                colored_mask[:, :, 1] = binary_mask * 255
 
-            # Add totals
-            total_roof_area_pixels += area_pixels
-            total_roof_area_m2 += area_m2
+                img = cv2.addWeighted(
+                    img,
+                    1.0,
+                    colored_mask,
+                    0.5,
+                    0
+                )
 
-            # Print individual roof area
-            print(f"\nRoof {i+1}")
-            print(f"Area (pixels): {area_pixels}")
-            print(f"Area (m²): {area_m2:.2f}")
+                area_pixels = np.sum(binary_mask)
 
-            # Optional overlay visualization
-            colored_mask = np.zeros_like(img)
-            colored_mask[:, :, 1] = binary_mask * 255
+                area_m2 = (
+                    area_pixels *
+                    square_meters_per_pixel
+                )
 
-            img = cv2.addWeighted(
-                img,
-                1.0,
-                colored_mask,
-                0.5,
-                0
-            )
+                total_roof_area_pixels += area_pixels
+                total_roof_area_m2 += area_m2
 
-# Final totals
-print("\n==============================")
-print("TOTAL ROOF AREA")
-print("==============================")
-print(f"Total Pixels: {total_roof_area_pixels}")
-print(f"Total Area: {total_roof_area_m2:.2f} m²")
+    output_path = os.path.join(
+        "outputs",
+        "roof_result.png"
+    )
 
-# Save result image
-cv2.imwrite("roof_area_result.png", img)
+    cv2.imwrite(
+        output_path,
+        img
+    )
+
+    return {
+        "roof_pixels": int(total_roof_area_pixels),
+        "roof_area_m2": float(total_roof_area_m2),
+        "roof_image": output_path
+    }
