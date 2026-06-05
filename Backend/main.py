@@ -5,7 +5,10 @@ from fastapi.staticfiles import StaticFiles
 
 from demo import roof_area
 from demo2 import solar_area
+import os
 
+os.makedirs("uploads", exist_ok=True)
+os.makedirs("outputs", exist_ok=True)
 app = FastAPI()
 app.mount(
     "/outputs",
