@@ -4,6 +4,7 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import Navbar from './components/Navbar'
 import './App.css'
+import SolarAnalyzer from './components/SolarAnalyzer'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -11,7 +12,7 @@ function App() {
   return (
     <>
     <Navbar/>
-    <h1>hello world!</h1>
+    <SolarAnalyzer/>
     </>
     
   )
