@@ -7,7 +7,6 @@ model = YOLO("solarpd/runs/segment/train-2/weights/best.pt")
 
 
 def solar_area(image_path, square_meters_per_pixel):
-
     results = model.predict(
         source=image_path,
         conf=0.05,
@@ -26,14 +25,11 @@ def solar_area(image_path, square_meters_per_pixel):
     panel_count = 0
 
     for r in results:
-
         if r.masks is not None:
-
             masks = r.masks.data.cpu().numpy()
             classes = r.boxes.cls.cpu().numpy()
 
             for mask, cls in zip(masks, classes):
-
                 class_name = r.names[int(cls)]
 
                 if class_name != "solar-pv-panel":
