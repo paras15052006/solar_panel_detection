@@ -1,21 +1,19 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import Navbar from './components/Navbar'
-import './App.css'
-import SolarAnalyzer from './components/SolarAnalyzer'
+import { Routes, Route } from "react-router-dom";
+
+import About from "./components/About";
+import SolarAnalyzer from "./components/SolarAnalyzer";
+import Navbar from "./components/Navbar";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
     <Navbar/>
-    <SolarAnalyzer/>
+    <Routes>
+      <Route path="/" element={<SolarAnalyzer />} />
+      <Route path="/about" element={<About />} />
+    </Routes>
     </>
-    
-  )
+  );
 }
 
-export default App
+export default App;
