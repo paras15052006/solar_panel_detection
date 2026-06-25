@@ -487,7 +487,7 @@ export default function SolarAnalyzer() {
     setError(null);
   };
 
-  const handleAnalyze = async () => {
+  const handleAnalyze = async () => { 
     if (!image) {
       setError("Please select an image first.");
       return;
@@ -523,7 +523,7 @@ export default function SolarAnalyzer() {
 
       const data = await response.json();
       setResult(data);
-    } catch (err) {
+    } catch (err) { 
       console.error("Error:", err);
       setError(err.message || "Analysis failed. Make sure the API server is running.");
     } finally {
@@ -619,19 +619,19 @@ export default function SolarAnalyzer() {
           <div className="sa-card">
             <div className="sa-stats">
               <div className="sa-stat-item">
-                <p className="sa-stat-label">Detected Panels</p>
-                <p className="sa-stat-value teal">{result.detected_panels || 0}</p>
-                <p className="sa-stat-sub">Currently installed</p>
+                <p className="sa-stat-label">Solar Area</p>
+                <p className="sa-stat-value teal">{result.solar_area_m2?.toFixed(1) || 0} m²</p>
+                <p className="sa-stat-sub">Area of Currently installed</p>
               </div>
               <div className="sa-stat-item">
                 <p className="sa-stat-label">Roof Area</p>
                 <p className="sa-stat-value amber">{result.roof_area_m2?.toFixed(1) || 0} m²</p>
-                <p className="sa-stat-sub">Total available</p>
+                <p className="sa-stat-sub">Total available Area</p>
               </div>
               <div className="sa-stat-item">
                 <p className="sa-stat-label">Max Panels</p>
                 <p className="sa-stat-value purple">{result.max_panels_possible || 0}</p>
-                <p className="sa-stat-sub">Can be installed</p>
+                <p className="sa-stat-sub">Panels of size 2300x1200 mm Possible</p>
               </div>
             </div>
 
@@ -652,7 +652,7 @@ export default function SolarAnalyzer() {
 
                 {result.solar_image && (
                   <div className="sa-result-image">
-                    <div className="sa-result-image-header">
+                    <div className="sa-result-image-header">  
                       <div className="sa-result-dot teal" />
                       <span className="sa-result-label">Panel Detection</span>
                     </div>

@@ -11,14 +11,14 @@ def solar_area(image_path, square_meters_per_pixel):
         source=image_path,
         conf=0.05,
         imgsz=1280,
-        retina_masks=True,
+        retina_masks=True,  
         show_labels=False,
         show_conf=False,
         iou=0.30,
         save=True
     )
 
-    img = cv2.imread(image_path)
+    img = cv2.imread(image_path)    
 
     total_panel_area_pixels = 0
     total_panel_area_m2 = 0

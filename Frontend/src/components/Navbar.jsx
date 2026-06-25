@@ -182,10 +182,7 @@ const LINKS = [
     name: "Home",
     path: "/",
   },
-  {
-    name: "Dashboard",
-    path: "/analyzer",
-  },
+ 
   {
     name: "About",
     path: "/about",
